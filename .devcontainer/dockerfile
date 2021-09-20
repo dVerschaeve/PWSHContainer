@@ -1,0 +1,14 @@
+FROM mcr.microsoft.com/vscode/devcontainers/base:focal
+
+COPY deploy/*.sh /tmp/deploy/
+COPY deploy/*.ps1 /tmp/deploy
+COPY deploy/MyModules.json /tmp/deploy
+
+
+RUN apt-get update \
+   && /bin/bash /tmp/deploy/git.sh \
+   && /bin/bash /tmp/deploy/pwsh.sh
+
+# Change to vsCode user to deploy PowerShell Modules
+USER vscode
+RUN /bin/pwsh /tmp/deploy/Check-PsModules.ps1 -JSONFile /tmp/deploy/MyModules.json
